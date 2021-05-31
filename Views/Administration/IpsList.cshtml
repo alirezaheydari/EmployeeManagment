@@ -1,0 +1,21 @@
+﻿@inject IIpDetectedRepository ipDetected
+
+@{ 
+    ViewBag.Title = "Ips List";
+}
+<h1 class="m-5 text-center">Ips List</h1>
+
+@foreach (var item in ipDetected.GetAll())
+{
+    <div class="card mt-2 col-3" >
+        <div class="card-header" >
+            <div class="card-title"> @item.Ip </div>
+        </div>
+        <div class="card-body">
+            <div class="card-title"> IP :  @item.Ip </div>
+            <div class="card-title"> Pattern :  @item.Pattern </div>
+            <div class="card-title"> Time For Request :  @item.requestTime </div>
+        </div>
+        <div class="card-footer" ></div>
+    </div>
+}
