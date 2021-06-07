@@ -50,6 +50,7 @@ namespace EmployeeManagment
             }).AddXmlSerializerFormatters();
             services.AddScoped<IEmployeeRepository, SQLEmployeeRepository>();
             services.AddScoped<IIpDetectedRepository, IpDetectedRepository>();
+            services.AddScoped<ICustomIpPatternRepository, SQLCustomIpPattern>();
             services.AddMemoryCache();
 
 

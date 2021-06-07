@@ -17,6 +17,7 @@ namespace EmployeeManagment.Models
 
         public DbSet<Employee> Employees { get; set; }
         public DbSet<IpDetected> IpDetecteds { get; set; }
+        public DbSet<CustomIpPattern> CustomIpPatterns { get; set; }
 
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)

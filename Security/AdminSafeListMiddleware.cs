@@ -14,6 +14,7 @@ namespace EmployeeManagment.Security
     {
         private readonly RequestDelegate _next;
         private IIpDetectedRepository ipDetected;
+        private ICustomIpPatternRepository ipPattern;
         private readonly ILogger<AdminSafeListMiddleware> _logger;
         private readonly Dictionary<IpPattern,int> trackerCounter;
 
@@ -26,9 +27,14 @@ namespace EmployeeManagment.Security
             _logger = logger;
         }
 
-        public async Task Invoke(HttpContext context, IIpDetectedRepository ipDetected, AppDbContext appDb)
+        public async Task Invoke(HttpContext context, IIpDetectedRepository ipDetected, AppDbContext appDb, ICustomIpPatternRepository ipPattern)
         {
             this.ipDetected = ipDetected;
+            this.ipPattern = ipPattern;
+
+            var pattern = ipPattern.GetEnabledPattern();
+
+
             if (context.Request.Method != HttpMethod.Get.Method)
             {
                 var remoteIp = context.Connection.RemoteIpAddress;
