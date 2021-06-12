@@ -15,17 +15,19 @@ namespace EmployeeManagment.Models
     {
         private readonly RoleManager<IdentityRole> roleManager;
         private readonly IIpDetectedRepository ipDetected;
+        private readonly ICustomIpPatternRepository ipPattern;
         private readonly UserManager<ApplicationUser> userManager;
 
         public AdministrationController(RoleManager<IdentityRole> roleManager,
                                         IIpDetectedRepository ipDetected,
+                                        ICustomIpPatternRepository ipPattern,
                                         UserManager<ApplicationUser> userManager)
         {
             this.roleManager = roleManager;
             this.ipDetected = ipDetected;
+            this.ipPattern = ipPattern;
             this.userManager = userManager;
         }
-
 
         public async Task<IActionResult> DeleteUser(string id)
         {
@@ -277,5 +279,55 @@ namespace EmployeeManagment.Models
 
             return RedirectToAction("EditRole", new { Id = roleId });
         }
+
+
+        [HttpPost]
+        public ActionResult IpPattern(CustomIpPattern model)
+        {
+            if (ModelState.IsValid)
+            {
+                ipPattern.Update(model);
+            }
+
+            ipPattern.GetAllPattern();
+
+            return RedirectToAction("IpPattern");
+        }
+
+        [HttpGet]
+        public ViewResult IpPattern()
+        {
+            var model = ipPattern.GetAllPattern();
+            return View(model);
+        }
+
+
+        [HttpGet]
+        public ViewResult AddIpPattern()
+        {
+            return View();
+        }
+        
+        [HttpPost]
+        public ActionResult AddIpPattern(IpPatternCreateViewModel model)
+        {
+            if (!ModelState.IsValid)
+                return View();
+
+            ipPattern.Add(new CustomIpPattern
+            {
+                Enabled = model.Enabled,
+                FirstIpPart = model.FirstIpPart,
+                SeconIpdPart = model.SeconIpdPart,
+                ThirdIpPart = model.ThirdIpPart,
+                ForthIpPart = model.ForthIpPart,
+                Title = model.Title,
+                UserAgent = model.UserAgent,
+                VerbsOrMethod = model.VerbsOrMethod.ToString()
+            });
+
+            return RedirectToAction("IpPattern");
+        }
+
     }
 }

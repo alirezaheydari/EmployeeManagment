@@ -9,5 +9,7 @@ namespace EmployeeManagment.Models
     {
         CustomIpPattern GetEnabledPattern();
         CustomIpPattern Add(CustomIpPattern model);
+        CustomIpPattern Update(CustomIpPattern model);
+        IEnumerable<CustomIpPattern> GetAllPattern();
     }
 }

@@ -1,0 +1,71 @@
+﻿@model IpPatternCreateViewModel 
+@{
+    ViewBag.Title = "Add New Pattern";
+}
+<h1>Add New Pattern</h1>
+
+<form method="post">
+    <div class="form-group row">
+        <label asp-for="Title" class="col-sm-2 col-form-label"></label>
+        <div class="col-sm-10">
+            <input asp-for="Title" class="form-control" placeholder="Title" type="text" />
+            <span asp-validation-for="Title" class="text-danger"></span>
+        </div>
+    </div>
+    <div class="form-group row">
+        <label asp-for="UserAgent" class="col-sm-2 col-form-label"></label>
+        <div class="col-sm-10">
+            <input asp-for="UserAgent" class="form-control" placeholder="UserAgent" type="text" />
+            <span asp-validation-for="UserAgent" class="text-danger"></span>
+        </div>
+    </div>
+    <div class="form-group row">
+        <label asp-for="VerbsOrMethod" class="col-sm-2 col-form-label"></label>
+        <div class="col-sm-10">
+            <select asp-for="VerbsOrMethod" class="custom-select mr-sm-2" asp-items="Html.GetEnumSelectList<HttpMethodEnum>()">
+                <option value="">Please Select</option>
+            </select>
+            <span asp-validation-for="VerbsOrMethod" class="text-danger"></span>
+        </div>
+    </div>
+    <div class="form-group row">
+        <label asp-for="FirstIpPart" class="col-sm-2 col-form-label"></label>
+        <div class="col-sm-10">
+            <input asp-for="FirstIpPart" class="form-control" placeholder="FirstIpPart" type="text" />
+            <span asp-validation-for="FirstIpPart" class="text-danger"></span>
+        </div>
+    </div>
+    <div class="form-group row">
+        <label asp-for="SeconIpdPart" class="col-sm-2 col-form-label"></label>
+        <div class="col-sm-10">
+            <input asp-for="SeconIpdPart" class="form-control" placeholder="SeconIpdPart" type="text" />
+            <span asp-validation-for="SeconIpdPart" class="text-danger"></span>
+        </div>
+    </div>
+    <div class="form-group row">
+        <label asp-for="ThirdIpPart" class="col-sm-2 col-form-label"></label>
+        <div class="col-sm-10">
+            <input asp-for="ThirdIpPart" class="form-control" placeholder="ThirdIpPart" type="text" />
+            <span asp-validation-for="ThirdIpPart" class="text-danger"></span>
+        </div>
+    </div>
+    <div class="form-group row">
+        <label asp-for="ForthIpPart" class="col-sm-2 col-form-label"></label>
+        <div class="col-sm-10">
+            <input asp-for="ForthIpPart" class="form-control" placeholder="ForthIpPart" type="text" />
+            <span asp-validation-for="ForthIpPart" class="text-danger"></span>
+        </div>
+    </div>
+    <div class="form-group row">
+        <label asp-for="Enabled" class="col-sm-2 col-form-label"></label>
+        <div class="col-sm-10">
+            <input type="checkbox" asp-for="Enabled" />
+            <span asp-validation-for="Enabled" class="text-danger"></span>
+        </div>
+    </div>
+    <div class="form-group row">
+        <div class="col-sm-10">
+            <button type="submit" class="btn btn-primary">Create</button>
+        </div>
+    </div>
+</form>
