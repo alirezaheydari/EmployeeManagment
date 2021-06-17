@@ -284,12 +284,7 @@ namespace EmployeeManagment.Models
         [HttpPost]
         public ActionResult IpPattern(CustomIpPattern model)
         {
-            if (ModelState.IsValid)
-            {
-                ipPattern.Update(model);
-            }
-
-            ipPattern.GetAllPattern();
+            ipPattern.Update(model);
 
             return RedirectToAction("IpPattern");
         }

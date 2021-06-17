@@ -16,13 +16,12 @@ namespace EmployeeManagment.Security
         private IIpDetectedRepository ipDetected;
         private ICustomIpPatternRepository ipPattern;
         private readonly ILogger<AdminSafeListMiddleware> _logger;
-        private readonly Dictionary<IpPattern,int> trackerCounter;
+        private int trackerCounter = 0;
 
         public AdminSafeListMiddleware(
             RequestDelegate next,
             ILogger<AdminSafeListMiddleware> logger)
         {
-            trackerCounter = new Dictionary<IpPattern, int>();
             _next = next;
             _logger = logger;
         }
@@ -33,31 +32,86 @@ namespace EmployeeManagment.Security
             this.ipPattern = ipPattern;
 
             var pattern = ipPattern.GetEnabledPattern();
+            var remoteIp = context.Connection.RemoteIpAddress;
 
 
-            if (context.Request.Method != HttpMethod.Get.Method)
+            if (context.Request.Method.Equals(pattern.VerbsOrMethod,StringComparison.OrdinalIgnoreCase))
             {
-                var remoteIp = context.Connection.RemoteIpAddress;
-                var model = ipDetected.add(remoteIp.ToString());
-                if (model.Pattern == IpPattern.none)
+
+
+                var IpParts = remoteIp.ToString().Split('.');
+
+                if (IpParts.Length != 4)
                 {
                     await _next.Invoke(context);
+
+                    var model = ipDetected.add(remoteIp.ToString(), -1);
                     return;
                 }
 
 
-                if (trackerCounter.ContainsKey(model.Pattern))
-                    trackerCounter.Add(model.Pattern, 1);
-                else
-                    trackerCounter[model.Pattern]++;
+                bool first = false, second = false, third = false, forth = false, agent = false;
 
-                if(trackerCounter[model.Pattern] >= 5)
+                var firstPart = IpParts[0];
+
+                if (!string.IsNullOrWhiteSpace(pattern.FirstIpPart))
                 {
-                    _logger.LogWarning($"this pattern detected {model.Pattern} ");
-                    return;
+                    first = firstPart.Equals(pattern.FirstIpPart);
                 }
 
+
+
+                var secondPart = IpParts[1];
+
+                if (!string.IsNullOrWhiteSpace(pattern.SeconIpdPart))
+                {
+                    second = secondPart.Equals(pattern.SeconIpdPart);
+                }
+
+                
+                var thirdPart = IpParts[2];
+
+                if (!string.IsNullOrWhiteSpace(pattern.ThirdIpPart))
+                {
+                    third = thirdPart.Equals(pattern.ThirdIpPart);
+                }
+
+                
+                var forthPart = IpParts[3];
+
+                if (!string.IsNullOrWhiteSpace(pattern.ForthIpPart))
+                {
+                    forth = forthPart.Equals(pattern.ForthIpPart);
+                }
+
+
+
+                
+                if((!string.IsNullOrWhiteSpace(pattern.FirstIpPart)) && firstPart.Equals(pattern.FirstIpPart))
+
+                if (!string.IsNullOrWhiteSpace(pattern.UserAgent))
+                {
+                        agent = context.Request.Headers["User-Agent"].ToString().ToLower().Contains(pattern.UserAgent.ToLower());
+                }
+
+                if (agent || first || second || third || forth)
+                {
+
+                    var model = ipDetected.add(remoteIp.ToString(),pattern.Id);
+                    trackerCounter++;
+                    if(trackerCounter > 5)
+                    {
+                        _logger.LogWarning($"this pattern detected {pattern.Title} ");
+                        return;
+                    }
+                    else
+                        ipDetected.add(remoteIp.ToString(), -1);
+
+                }
             }
+            else
+                ipDetected.add(remoteIp.ToString(), -1);
+
 
             await _next.Invoke(context);
         }

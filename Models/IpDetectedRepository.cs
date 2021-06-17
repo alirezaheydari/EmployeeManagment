@@ -17,13 +17,13 @@ namespace EmployeeManagment.Models
             this.context = context;
             this.logger = logger;
         }
-        public IpDetected add(string ip)
+        public IpDetected add(string ip,int idPattern)
         {
             var model = new IpDetected
             {
                 Ip = ip,
                 requestTime = DateTime.Now,
-                Pattern = IpValidatorPattern.GetPattern(ip)
+                Pattern = idPattern
             };
             context.IpDetecteds.Add(model);
             context.SaveChanges();

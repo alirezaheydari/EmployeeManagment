@@ -4,12 +4,13 @@
 }
 
 <h2>All Ip Pattern</h2>
+<h2>All Ip Pattern</h2>
 <div>
     @foreach (var pattern in Model)
     {
         <div class="card">
             <form method="post">
-                <input type="hidden" name="name" value="@(pattern.Id)" />
+                <input type="hidden" name="id" value="@(pattern.Id)" />
                 <div class="card-header">
                     <div class="card-title">@pattern.Title</div>
                 </div>
@@ -20,7 +21,7 @@
                     <div>ForthIpPart : @pattern.ForthIpPart</div>
                     <div>UserAgent : @pattern.UserAgent</div>
                     <div>Method : @pattern.VerbsOrMethod</div>
-                    <input type="checkbox" name="Enabled" value="@(pattern.Enabled)" />
+                    <input type="checkbox" name="Enabled" @(pattern.Enabled ? "checked" : "") value="@(pattern.Enabled ? "true" : "false")" />
                 </div>
                 <div class="card-footer">
                     <input type="submit" value="save" />

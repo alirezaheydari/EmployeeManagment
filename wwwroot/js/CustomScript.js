@@ -10,5 +10,4 @@
         $('#' + deleteSpan).show();
         $('#' + confirmDeleteSpan).hide();
     }
-
 }

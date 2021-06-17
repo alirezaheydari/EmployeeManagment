@@ -19,13 +19,13 @@ namespace EmployeeManagment.ViewModel
         public HttpMethodEnum VerbsOrMethod { get; set; }
         public string UserAgent { get; set; }
         [MaxLength(3)]
-        public int FirstIpPart { get; set; }
+        public string FirstIpPart { get; set; }
         [MaxLength(3)]
-        public int SeconIpdPart { get; set; }
+        public string SeconIpdPart { get; set; }
         [MaxLength(3)]
-        public int ThirdIpPart { get; set; }
+        public string ThirdIpPart { get; set; }
         [MaxLength(3)]
-        public int ForthIpPart { get; set; }
+        public string ForthIpPart { get; set; }
 
         public bool Enabled { get; set; }
     }

@@ -111,6 +111,19 @@ namespace EmployeeManagment.Controllers
             return View();
         }
 
+        [HttpPost]
+        public async Task<IActionResult> DeleteEmployee(int id)
+        {
+            var employee = _employeeRepository.GetEmployee(id);
+            if (employee == null)
+            {
+                ViewBag.ErrorMessage = $"employee with id {id} cannot be found";
+                return View("NotFound");
+            }
+            var result = _employeeRepository.Delete(id);
+
+            return RedirectToAction("Index");
+        }
         private string ProcessUploadedFile(EmployeeCreateViewModel model)
         {
             string uniqueFileName = null;

@@ -7,7 +7,7 @@ namespace EmployeeManagment.Models
 {
     public interface IIpDetectedRepository
     {
-        IpDetected add(string ip);
+        IpDetected add(string ip, int idPattern);
         List<IpDetected> GetAll();
     }
 }

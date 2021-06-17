@@ -11,7 +11,7 @@ namespace EmployeeManagment.Models
         [Key]
         public int Id { get; set; }
         public string Ip { get; set; }
-        public IpPattern Pattern { get; set; }
+        public int Pattern { get; set; }
         public DateTime requestTime { get; set; }
     }
 }
