@@ -45,6 +45,12 @@ namespace EmployeeManagment.Models
             return result;
         }
 
+        public IEnumerable<CustomIpPattern> GetEnabledPatterns()
+        {
+            var result = context.CustomIpPatterns.Where(x => x.Enabled).ToList();
+            return result;
+        }
+
         public CustomIpPattern Update(CustomIpPattern model)
         {
             model.Enabled = !model.Enabled;

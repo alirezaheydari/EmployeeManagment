@@ -31,7 +31,7 @@ namespace EmployeeManagment.Security
             _logger = logger;
         }
 
-        public async Task Invoke(HttpContext context, IIpDetectedRepository ipDetected, AppDbContext appDb, ICustomIpPatternRepository ipPattern, 
+        public async Task Invoke(HttpContext context, IIpDetectedRepository ipDetected, AppDbContext appDb, ICustomIpPatternRepository ipPattern,
             RoleManager<IdentityRole> roleManager, UserManager<ApplicationUser> userManager, SignInManager<ApplicationUser> signInMeneger, IHttpContextAccessor httpContextAccessor)
         {
             this.ipDetected = ipDetected;
@@ -57,23 +57,33 @@ namespace EmployeeManagment.Security
             _logger.LogError($"\nthis last remote ip : {remoteIp}\n");
 
             _logger.LogError($"\n-------------------------------------------------------\n");
+
             if (context.User.IsInRole("Admin"))
             {
                 await _next.Invoke(context);
                 return;
             }
 
-            var pattern = ipPattern.GetEnabledPattern();
+            var patterns = ipPattern.GetEnabledPatterns();
 
-            if(pattern == null)
+            if (patterns == null || (!patterns.Any()))
             {
                 await _next.Invoke(context);
                 ipDetected.add(remoteIp, -1);
                 return;
             }
-            if (context.Request.Method.Equals(pattern.VerbsOrMethod,StringComparison.OrdinalIgnoreCase))
+
+
+            foreach (var pattern in patterns)
             {
 
+                #region StartDetected
+
+                if (!context.Request.Method.Equals(pattern.VerbsOrMethod, StringComparison.OrdinalIgnoreCase))
+                {
+                    ipDetected.add(remoteIp, -1);
+                    return;
+                }
 
                 var IpParts = remoteIp.Split('.');
 
@@ -81,7 +91,7 @@ namespace EmployeeManagment.Security
                 {
                     await _next.Invoke(context);
 
-                    var model = ipDetected.add(remoteIp, -1);
+                    ipDetected.add(remoteIp, -1);
                     return;
                 }
 
@@ -104,7 +114,7 @@ namespace EmployeeManagment.Security
                     second = secondPart.Equals(pattern.SeconIpdPart);
                 }
 
-                
+
                 var thirdPart = IpParts[2];
 
                 if (!string.IsNullOrWhiteSpace(pattern.ThirdIpPart))
@@ -112,7 +122,7 @@ namespace EmployeeManagment.Security
                     third = thirdPart.Equals(pattern.ThirdIpPart);
                 }
 
-                
+
                 var forthPart = IpParts[3];
 
                 if (!string.IsNullOrWhiteSpace(pattern.ForthIpPart))
@@ -122,20 +132,20 @@ namespace EmployeeManagment.Security
 
 
 
-                
-                if((!string.IsNullOrWhiteSpace(pattern.FirstIpPart)) && firstPart.Equals(pattern.FirstIpPart))
 
-                if (!string.IsNullOrWhiteSpace(pattern.UserAgent))
-                {
+                if ((!string.IsNullOrWhiteSpace(pattern.FirstIpPart)) && firstPart.Equals(pattern.FirstIpPart))
+
+                    if (!string.IsNullOrWhiteSpace(pattern.UserAgent))
+                    {
                         agent = context.Request.Headers["User-Agent"].ToString().ToLower().Contains(pattern.UserAgent.ToLower());
-                }
+                    }
 
                 if (agent || first || second || third || forth)
                 {
 
-                    var model = ipDetected.add(remoteIp,pattern.Id);
+                    var model = ipDetected.add(remoteIp, pattern.Id);
                     trackerCounter++;
-                    if(trackerCounter > 5)
+                    if (trackerCounter > 5)
                     {
                         _logger.LogWarning($"this pattern detected {pattern.Title} ");
                         return;
@@ -144,10 +154,10 @@ namespace EmployeeManagment.Security
                         ipDetected.add(remoteIp, -1);
 
                 }
-            }
-            else
-                ipDetected.add(remoteIp, -1);
 
+                #endregion
+
+            }
 
             await _next.Invoke(context);
         }
