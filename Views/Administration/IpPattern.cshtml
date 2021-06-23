@@ -1,5 +1,5 @@
 ﻿@model IEnumerable<CustomIpPattern>
-@{ 
+@{
     ViewBag.Title = "All Ip Pattern";
 }
 
@@ -9,24 +9,55 @@
     @foreach (var pattern in Model)
     {
         <div class="card">
-            <form method="post">
-                <input type="hidden" name="id" value="@(pattern.Id)" />
-                <div class="card-header">
-                    <div class="card-title">@pattern.Title</div>
+            <div class="card-header">
+                <div class="card-title">@pattern.Title</div>
+            </div>
+            <div class="card-body">
+                <div>FirstIpPart : @pattern.FirstIpPart</div>
+                <div>SeconIpdPart : @pattern.SeconIpdPart</div>
+                <div>ThirdIpPart : @pattern.ThirdIpPart</div>
+                <div>ForthIpPart : @pattern.ForthIpPart</div>
+                <div>UserAgent : @pattern.UserAgent</div>
+                <div>Method : @pattern.VerbsOrMethod</div>
+            </div>
+            <div class="card-footer">
+                <div>
+                    <form method="post">
+                        <input type="hidden" name="Id" value="@(pattern.Id)" />
+                        <input type="hidden" name="FirstIpPart" value="@(pattern.FirstIpPart)" />
+                        <input type="hidden" name="SeconIpdPart" value="@(pattern.SeconIpdPart)" />
+                        <input type="hidden" name="ThirdIpPart" value="@(pattern.ThirdIpPart)" />
+                        <input type="hidden" name="ForthIpPart" value="@(pattern.ForthIpPart)" />
+                        <input type="hidden" name="UserAgent" value="@(pattern.UserAgent)" />
+                        <input type="hidden" name="Title" value="@(pattern.Title)" />
+                        <input type="hidden" name="VerbsOrMethod" value="@(pattern.VerbsOrMethod)" />
+                        <label>Enable :</label>
+                        <input type="checkbox" name="Enabled" @(pattern.Enabled ? "checked" : "") value="@(pattern.Enabled ? "true" : "false")" />
+                        <input type="submit" value="save" />
+                    </form>
                 </div>
-                <div class="card-body">
-                    <div>FirstIpPart : @pattern.FirstIpPart</div>
-                    <div>SeconIpdPart : @pattern.SeconIpdPart</div>
-                    <div>ThirdIpPart : @pattern.ThirdIpPart</div>
-                    <div>ForthIpPart : @pattern.ForthIpPart</div>
-                    <div>UserAgent : @pattern.UserAgent</div>
-                    <div>Method : @pattern.VerbsOrMethod</div>
-                    <input type="checkbox" name="Enabled" @(pattern.Enabled ? "checked" : "") value="@(pattern.Enabled ? "true" : "false")" />
+                <div>
+                    <form method="post" asp-action="DeleteIpPattern" asp-route-id="@(pattern.Id)">
+                        <span style="display: none" id="confirmDeleteSpan_@(pattern.Id)">
+                            <span>Are you sure want to delete ?</span>
+                            <button type="submit" class="btn btn-danger">Yes</button>
+                            <a href="#" onclick="confirmDelete('@(pattern.Id)',false)" class="btn btn-primary">No</a>
+                        </span>
+                        <span id="deleteSpan_@(pattern.Id)">
+                            <a href="#" onclick="confirmDelete('@(pattern.Id)',true)" class="btn btn-danger">
+                                Delete
+                            </a>
+                        </span>
+                    </form>
                 </div>
-                <div class="card-footer">
-                    <input type="submit" value="save" />
-                </div>
-            </form>
+
+            </div>
         </div>
     }
 </div>
+
+
+
+@section Scripts {
+    <script src="~/js/CustomScript.js"></script>
+}

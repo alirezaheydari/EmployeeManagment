@@ -61,7 +61,6 @@ namespace EmployeeManagment
                                 ILogger<Startup> logger)
         {
 
-            app.UseMiddleware<AdminSafeListMiddleware>();
 
             if (env.IsDevelopment())
             {
@@ -78,6 +77,7 @@ namespace EmployeeManagment
             app.UseStaticFiles();
 
             app.UseAuthentication();
+            app.UseMiddleware<AdminSafeListMiddleware>(); 
 
             //app.UseMvcWithDefaultRoute();
 

@@ -11,5 +11,7 @@ namespace EmployeeManagment.Models
         CustomIpPattern Add(CustomIpPattern model);
         CustomIpPattern Update(CustomIpPattern model);
         IEnumerable<CustomIpPattern> GetAllPattern();
+        CustomIpPattern Delete(int id);
+        CustomIpPattern Get(int id);
     }
 }

@@ -9,5 +9,7 @@ namespace EmployeeManagment.Models
     {
         IpDetected add(string ip, int idPattern);
         List<IpDetected> GetAll();
+        IpDetected Delete(int id);
+        void DeleteAll();
     }
 }

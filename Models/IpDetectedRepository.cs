@@ -33,5 +33,27 @@ namespace EmployeeManagment.Models
         {
             return context.IpDetecteds.ToList();
         }
+
+        public IpDetected Delete(int id)
+        {
+
+            var ipDetected = context.IpDetecteds.Find(id);
+            if (ipDetected != null)
+            {
+                context.IpDetecteds.Remove(ipDetected);
+                context.SaveChanges();
+            }
+            return ipDetected;
+
+        }
+
+        public void DeleteAll()
+        {
+            foreach (var ip in this.GetAll())
+            {
+                context.IpDetecteds.Remove(ip);
+            }
+            context.SaveChanges();
+        }
     }
 }

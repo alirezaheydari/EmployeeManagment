@@ -1,11 +1,13 @@
 ﻿using EmployeeManagment.Models;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
+using System.Security.Claims;
 using System.Threading.Tasks;
 
 namespace EmployeeManagment.Security
@@ -16,6 +18,9 @@ namespace EmployeeManagment.Security
         private IIpDetectedRepository ipDetected;
         private ICustomIpPatternRepository ipPattern;
         private readonly ILogger<AdminSafeListMiddleware> _logger;
+        UserManager<ApplicationUser> userManager;
+        RoleManager<IdentityRole> roleManager;
+        SignInManager<ApplicationUser> signInMeneger;
         private int trackerCounter = 0;
 
         public AdminSafeListMiddleware(
@@ -26,26 +31,57 @@ namespace EmployeeManagment.Security
             _logger = logger;
         }
 
-        public async Task Invoke(HttpContext context, IIpDetectedRepository ipDetected, AppDbContext appDb, ICustomIpPatternRepository ipPattern)
+        public async Task Invoke(HttpContext context, IIpDetectedRepository ipDetected, AppDbContext appDb, ICustomIpPatternRepository ipPattern, 
+            RoleManager<IdentityRole> roleManager, UserManager<ApplicationUser> userManager, SignInManager<ApplicationUser> signInMeneger, IHttpContextAccessor httpContextAccessor)
         {
             this.ipDetected = ipDetected;
             this.ipPattern = ipPattern;
+            this.userManager = userManager;
+            this.roleManager = roleManager;
+            this.signInMeneger = signInMeneger;
+
+
+
+            var remoteIp = context.Connection.RemoteIpAddress.ToString();
+            _logger.LogError($"\n-------------------------------------------------------\n");
+            _logger.LogError($"\nthis first remote ip : {remoteIp}\n");
+            if (!string.IsNullOrWhiteSpace(context.Request.Headers["HTTP_X_FORWARDED_FOR"]))
+                remoteIp = context.Request.Headers["HTTP_X_FORWARDED_FOR"].ToString().Split(',')[0].Trim();
+            else if (!string.IsNullOrWhiteSpace(context.Request.Headers["REMOTE_ADDR"]))
+                remoteIp = context.Request.Headers["REMOTE_ADDR"];
+            else if (!string.IsNullOrWhiteSpace(context.Request.Headers["AR_REAL_IP"]))
+                remoteIp = context.Request.Headers["AR_REAL_IP"];
+            _logger.LogError($"\nthis HTTP_X_FORWARDED_FOR : {context.Request.Headers["HTTP_X_FORWARDED_FOR"]}\n");
+            _logger.LogError($"\nthis REMOTE_ADDR : {context.Request.Headers["REMOTE_ADDR"]}\n");
+            _logger.LogError($"\nthis AR_REAL_IP : {context.Request.Headers["AR_REAL_IP"]}\n");
+            _logger.LogError($"\nthis last remote ip : {remoteIp}\n");
+
+            _logger.LogError($"\n-------------------------------------------------------\n");
+            if (context.User.IsInRole("Admin"))
+            {
+                await _next.Invoke(context);
+                return;
+            }
 
             var pattern = ipPattern.GetEnabledPattern();
-            var remoteIp = context.Connection.RemoteIpAddress;
 
-
+            if(pattern == null)
+            {
+                await _next.Invoke(context);
+                ipDetected.add(remoteIp, -1);
+                return;
+            }
             if (context.Request.Method.Equals(pattern.VerbsOrMethod,StringComparison.OrdinalIgnoreCase))
             {
 
 
-                var IpParts = remoteIp.ToString().Split('.');
+                var IpParts = remoteIp.Split('.');
 
                 if (IpParts.Length != 4)
                 {
                     await _next.Invoke(context);
 
-                    var model = ipDetected.add(remoteIp.ToString(), -1);
+                    var model = ipDetected.add(remoteIp, -1);
                     return;
                 }
 
@@ -97,7 +133,7 @@ namespace EmployeeManagment.Security
                 if (agent || first || second || third || forth)
                 {
 
-                    var model = ipDetected.add(remoteIp.ToString(),pattern.Id);
+                    var model = ipDetected.add(remoteIp,pattern.Id);
                     trackerCounter++;
                     if(trackerCounter > 5)
                     {
@@ -105,12 +141,12 @@ namespace EmployeeManagment.Security
                         return;
                     }
                     else
-                        ipDetected.add(remoteIp.ToString(), -1);
+                        ipDetected.add(remoteIp, -1);
 
                 }
             }
             else
-                ipDetected.add(remoteIp.ToString(), -1);
+                ipDetected.add(remoteIp, -1);
 
 
             await _next.Invoke(context);

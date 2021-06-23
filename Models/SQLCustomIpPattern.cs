@@ -29,6 +29,15 @@ namespace EmployeeManagment.Models
             var result = context.CustomIpPatterns.ToList();
             return result;
         }
+        public CustomIpPattern Get(int id)
+        {
+            var result = context.CustomIpPatterns.Find(id);
+            if(result == null)
+            {
+                logger.LogError("this is empty");
+            }
+            return result;
+        }
 
         public CustomIpPattern GetEnabledPattern()
         {
@@ -38,10 +47,24 @@ namespace EmployeeManagment.Models
 
         public CustomIpPattern Update(CustomIpPattern model)
         {
+            model.Enabled = !model.Enabled;
             var patternChanged = context.CustomIpPatterns.Attach(model);
             patternChanged.State = Microsoft.EntityFrameworkCore.EntityState.Modified;
             context.SaveChanges();
             return model;
+        }
+
+        public CustomIpPattern Delete(int id)
+        {
+
+            var pattern = context.CustomIpPatterns.Find(id);
+            if (pattern != null)
+            {
+                context.CustomIpPatterns.Remove(pattern);
+                context.SaveChanges();
+            }
+            return pattern;
+
         }
     }
 }

@@ -284,6 +284,7 @@ namespace EmployeeManagment.Models
         [HttpPost]
         public ActionResult IpPattern(CustomIpPattern model)
         {
+
             ipPattern.Update(model);
 
             return RedirectToAction("IpPattern");
@@ -324,5 +325,37 @@ namespace EmployeeManagment.Models
             return RedirectToAction("IpPattern");
         }
 
+        [HttpPost]
+        public ActionResult DeleteThisIp(int id)
+        {   
+            if (id <= 0)
+            {
+                ViewBag.ErrorMessage = $"employee with id {id} cannot be found";
+                return View("NotFound");
+            }
+            ipDetected.Delete(id);
+            return RedirectToAction("IpsList");
+        }
+
+
+        [HttpPost]
+        public ActionResult DeleteIpPattern(int id)
+        {
+            var result = ipPattern.Get(id);
+            if (result == null)
+            {
+                ViewBag.ErrorMessage = $"employee with id {id} cannot be found";
+                return View("NotFound");
+            }
+            ipPattern.Delete(id);
+            return RedirectToAction("IpPattern");
+        }
+
+        [HttpPost]
+        public ActionResult DeleteAllIps(int id)
+        {
+            ipDetected.DeleteAll();
+            return RedirectToAction("Index","Home");
+        }
     }
 }
