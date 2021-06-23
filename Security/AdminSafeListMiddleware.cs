@@ -82,6 +82,7 @@ namespace EmployeeManagment.Security
                 if (!context.Request.Method.Equals(pattern.VerbsOrMethod, StringComparison.OrdinalIgnoreCase))
                 {
                     ipDetected.add(remoteIp, -1);
+                    await _next.Invoke(context);
                     return;
                 }
 
@@ -90,7 +91,6 @@ namespace EmployeeManagment.Security
                 if (IpParts.Length != 4)
                 {
                     await _next.Invoke(context);
-
                     ipDetected.add(remoteIp, -1);
                     return;
                 }
@@ -150,8 +150,6 @@ namespace EmployeeManagment.Security
                         _logger.LogWarning($"this pattern detected {pattern.Title} ");
                         return;
                     }
-                    else
-                        ipDetected.add(remoteIp, -1);
 
                 }
 
