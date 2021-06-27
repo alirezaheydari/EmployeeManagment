@@ -86,7 +86,9 @@ namespace EmployeeManagment.Models
 
         public ActionResult IpsList() 
         {
-            return View();
+            List<IpDetectedModelView> res = new List<IpDetectedModelView>();
+            ipDetected.GetAll().ForEach(x => res.Add(new IpDetectedModelView(ipPattern,x)));
+            return View(res);
         }
 
         [HttpPost]
