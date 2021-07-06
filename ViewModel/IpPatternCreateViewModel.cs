@@ -21,6 +21,7 @@ namespace EmployeeManagment.ViewModel
         [MaxLength(3)]
         public string FirstIpPart { get; set; }
         [MaxLength(3)]
+        [Display(Name = "secondIPPart")]
         public string SeconIpdPart { get; set; }
         [MaxLength(3)]
         public string ThirdIpPart { get; set; }

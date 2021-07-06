@@ -3,12 +3,17 @@
 
 
 @{ 
-    ViewBag.Title = "Ips List";
+    ViewBag.Title = "IPs List";
 }
-<h1 class="m-5 text-center">Ips List</h1>
+<h1 class="m-5 text-center">IPs List</h1>
 <div class="text-center m-5">
-    <form method="post" asp-action="DeleteAllIps">
-        <button style="width: auto" type="submit" class="btn btn-danger">Delete All Ip</button>
+    <form method="post" asp-action="DeleteAllIPs">
+        <button style="width: auto" type="submit" class="btn btn-danger">Purge</button>
+    </form>
+</div>
+<div>
+    <form method="post" >
+        
     </form>
 </div>
 <div style="display: flex; flex-flow: wrap-reverse">

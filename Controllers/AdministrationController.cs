@@ -84,7 +84,7 @@ namespace EmployeeManagment.Models
             return View(model);
         }
 
-        public ActionResult IpsList() 
+        public ActionResult IpsList() //TODO ::: این جا باید یه فیلتر بگیریم تا بتونیم جست و جو انجام بدیم
         {
             List<IpDetectedModelView> res = new List<IpDetectedModelView>();
             ipDetected.GetAll().ForEach(x => res.Add(new IpDetectedModelView(ipPattern,x)));
