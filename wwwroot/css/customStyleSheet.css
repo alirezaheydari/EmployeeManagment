@@ -8,3 +8,9 @@
 .btn.btn-to-index{
     width: auto;
 }
+.footer-site {
+    background: #d3d3d3;
+    vertical-align: bottom;
+    padding-bottom: 70px;
+    padding-top: 100px;
+}

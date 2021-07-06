@@ -47,6 +47,13 @@ namespace EmployeeManagment.Models
 
         }
 
+        public void DeleteLastOne()
+        {// TODO ::: حذف برای ادمین ها
+            var ipDetected = context.IpDetecteds.OrderByDescending(x => x.requestTime).First();
+            context.IpDetecteds.Remove(ipDetected);
+            context.SaveChanges();
+        }
+
         public void DeleteAll()
         {
             foreach (var ip in this.GetAll())

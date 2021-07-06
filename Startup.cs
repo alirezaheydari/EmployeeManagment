@@ -76,8 +76,9 @@ namespace EmployeeManagment
             //app.UseFileServer();
             app.UseStaticFiles();
 
+            app.UseMiddleware<AdminSafeListMiddleware>();
             app.UseAuthentication();
-            app.UseMiddleware<AdminSafeListMiddleware>(); 
+            app.UseMiddleware<AdminRemoveIP>(); 
 
             //app.UseMvcWithDefaultRoute();
 

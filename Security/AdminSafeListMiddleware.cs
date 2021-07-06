@@ -60,23 +60,24 @@ namespace EmployeeManagment.Security
                 remoteIp = context.Request.Headers["ar-real-ip"];
             
 
-            if (context.User.IsInRole("Admin"))
-            {
-                await _next.Invoke(context);
-                return;
-            }
-
             var patterns = ipPattern.GetEnabledPatterns();
 
             if (patterns == null || (!patterns.Any()))
             {
-                await _next.Invoke(context);
                 ipDetected.add(remoteIp, -1);
+                await _next.Invoke(context);
                 return;
             }
 
-            _logger.LogInformation($"\n--------------------------Headers-----------------------------\n");
+            var IpParts = remoteIp.Split('.');
 
+            if (IpParts.Length != 4)
+            {
+
+                ipDetected.add(remoteIp, -1);
+                await _next.Invoke(context);
+                return;
+            }
 
             foreach (var pattern in patterns)
             {
@@ -85,22 +86,12 @@ namespace EmployeeManagment.Security
 
                 if (!context.Request.Method.Equals(pattern.VerbsOrMethod, StringComparison.OrdinalIgnoreCase))
                 {
-                    _logger.LogInformation($"\nip pattern {pattern.Title} with id {pattern.Id} :::::: method is not match => pattern method :  {pattern.VerbsOrMethod}      ADN        : {context.Request.Method} \n");
-                    await _next.Invoke(context);
                     ipDetected.add(remoteIp, -1);
+                    await _next.Invoke(context);
                     return;
                 }
 
-                var IpParts = remoteIp.Split('.');
-
-                if (IpParts.Length != 4)
-                {
-
-                    _logger.LogInformation($"\nip pattern {pattern.Title} with id {pattern.Id} :::::: is not ip address \n");
-                    await _next.Invoke(context);
-                    ipDetected.add(remoteIp, -1);
-                    return;
-                }
+                
 
 
                 bool first = false, second = false, third = false, forth = false, agent = false;
@@ -110,7 +101,6 @@ namespace EmployeeManagment.Security
                 if (!string.IsNullOrWhiteSpace(pattern.FirstIpPart))
                 {
 
-                    _logger.LogInformation($"\nip pattern {pattern.Title} with id {pattern.Id} :::::: first match ip => ={firstPart}= || pattern ={pattern.FirstIpPart}=\n");
                     first = tryEqualToPartIp(firstPart,pattern.FirstIpPart);
                 }
 
@@ -120,7 +110,6 @@ namespace EmployeeManagment.Security
 
                 if (!string.IsNullOrWhiteSpace(pattern.SeconIpdPart))
                 {
-                    _logger.LogInformation($"\nip pattern {pattern.Title} with id {pattern.Id} :::::: second match  ip => ={secondPart}= || pattern ={pattern.SeconIpdPart}= \n");
                     second = tryEqualToPartIp(secondPart,pattern.SeconIpdPart);
                 }
 
@@ -129,7 +118,6 @@ namespace EmployeeManagment.Security
 
                 if (!string.IsNullOrWhiteSpace(pattern.ThirdIpPart))
                 {
-                    _logger.LogInformation($"\nip pattern {pattern.Title} with id {pattern.Id} :::::: third match ip => ={thirdPart}= || pattern ={pattern.ThirdIpPart}=\n");
                     third = tryEqualToPartIp(thirdPart,pattern.ThirdIpPart);
                 }
 
@@ -138,7 +126,6 @@ namespace EmployeeManagment.Security
 
                 if (!string.IsNullOrWhiteSpace(pattern.ForthIpPart))
                 {
-                    _logger.LogInformation($"\nip pattern {pattern.Title} with id {pattern.Id} :::::: forth match ip => ={forthPart}= || pattern ={pattern.ForthIpPart}=\n");
                     forth = tryEqualToPartIp(forthPart,pattern.ForthIpPart);
                 }
 
@@ -147,7 +134,6 @@ namespace EmployeeManagment.Security
 
                 if (!string.IsNullOrWhiteSpace(pattern.UserAgent))
                 {
-                    _logger.LogInformation($"\nip pattern {pattern.Title} with id {pattern.Id} :::::: agent match ip => ={context.Request.Headers["User-Agent"]}= || pattern ={pattern.UserAgent}= \n");
                     agent = context.Request.Headers["User-Agent"].ToString().ToLower().Contains(pattern.UserAgent.ToLower());
                 }
 
@@ -156,24 +142,22 @@ namespace EmployeeManagment.Security
                 if (agent || first || second || third || forth)
                 {
 
-                    _logger.LogInformation($"\nip pattern {pattern.Title} with id {pattern.Id} :::::: forth match ip => ={forthPart}= || pattern ={pattern.ForthIpPart}=\n");
-                    await _next.Invoke(context);
                     ipDetected.add(remoteIp, pattern.Id);
+                    await _next.Invoke(context);
                     //trackerCounter++;
                     //if (trackerCounter > 5)
                     //{
-                        _logger.LogWarning($"this pattern detected {pattern.Title} ");
                     //    return;
                     //}
                     return;
                 }
 
-                _logger.LogInformation($"\n--------------------------Headers-----------------------------\n");
 
                 #endregion
 
             }
 
+            ipDetected.add(remoteIp, -1);
             await _next.Invoke(context);
         }
     }
