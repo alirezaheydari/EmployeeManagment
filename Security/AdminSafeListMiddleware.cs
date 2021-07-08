@@ -90,6 +90,16 @@ namespace EmployeeManagment.Security
                     await _next.Invoke(context);
                     return;
                 }
+                else
+                {
+                    var dontHaveAnyCondition = string.IsNullOrWhiteSpace(pattern.FirstIpPart) && string.IsNullOrWhiteSpace(pattern.SeconIpdPart) && string.IsNullOrWhiteSpace(pattern.ThirdIpPart) && string.IsNullOrWhiteSpace(pattern.ForthIpPart) && string.IsNullOrWhiteSpace(pattern.UserAgent);
+                    if (dontHaveAnyCondition)
+                    {
+                        ipDetected.add(remoteIp, pattern.Id);
+                        await _next.Invoke(context);
+                        return;
+                    }
+                }
 
                 
 
