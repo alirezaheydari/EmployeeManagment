@@ -16,16 +16,20 @@ namespace EmployeeManagment.ViewModel
         public string Title { get; set; }
 
         [Required]
+        [Display(Name = "Method*")]
         public HttpMethodEnum VerbsOrMethod { get; set; }
         public string UserAgent { get; set; }
         [MaxLength(3)]
+        [Display(Name = "FirstIPPart")]
         public string FirstIpPart { get; set; }
         [MaxLength(3)]
         [Display(Name = "secondIPPart")]
         public string SeconIpdPart { get; set; }
         [MaxLength(3)]
+        [Display(Name = "ThirdIPPart")]
         public string ThirdIpPart { get; set; }
         [MaxLength(3)]
+        [Display(Name = "ForthIPPart")]
         public string ForthIpPart { get; set; }
 
         public bool Enabled { get; set; }

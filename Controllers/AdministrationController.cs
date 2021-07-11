@@ -88,7 +88,26 @@ namespace EmployeeManagment.Models
         {
             List<IpDetectedModelView> res = new List<IpDetectedModelView>();
             ipDetected.GetAll().ForEach(x => res.Add(new IpDetectedModelView(ipPattern,x)));
+            ViewBag.JustPattern = true;
             return View(res);
+        }
+        public ActionResult IpsListWithOutPattern(SearchIpsList searchItem)
+        {
+            List<IpDetectedModelView> res = new List<IpDetectedModelView>();
+            ipDetected.GetAll().ForEach(x => res.Add(new IpDetectedModelView(ipPattern, x)));
+            if (searchItem != null)
+            {
+                if(!string.IsNullOrWhiteSpace(searchItem.Title))
+                {
+                    res = res.Where(x => x.PatternName.ToUpper().Contains(searchItem.Title.ToUpper())).ToList();
+                }
+                if(!string.IsNullOrWhiteSpace(searchItem.ipContains))
+                {
+                    res = res.Where(x => x.Ip.ToUpper().Contains(searchItem.ipContains)).ToList();
+                }
+            }
+            ViewBag.JustPattern = false;
+            return View("IpsList", res);
         }
 
         [HttpPost]
