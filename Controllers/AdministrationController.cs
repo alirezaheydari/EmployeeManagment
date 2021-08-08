@@ -84,7 +84,7 @@ namespace EmployeeManagment.Models
             return View(model);
         }
 
-        public ActionResult IpsList() //TODO ::: این جا باید یه فیلتر بگیریم تا بتونیم جست و جو انجام بدیم
+        public ActionResult IpsList()
         {
             List<IpDetectedModelView> res = new List<IpDetectedModelView>();
             ipDetected.GetAll().ForEach(x => res.Add(new IpDetectedModelView(ipPattern,x)));
@@ -377,6 +377,15 @@ namespace EmployeeManagment.Models
         {
             ipDetected.DeleteAll();
             return RedirectToAction("Index","Home");
+        }
+
+        [HttpGet]
+        public ActionResult CategorizeIPs()
+        {
+            List<IpDetectedModelView> ipDection = new List<IpDetectedModelView>();
+            ipDetected.GetAll().ForEach(x => ipDection.Add(new IpDetectedModelView(ipPattern, x)));
+            var result = ipDection.GroupBy(x => new { x.Ip, x.PatternName }).Select(x => new CategorizeIPsModelView { IP = x.Key.Ip, Pattern = x.Key.PatternName, Count = x.Count() }).ToList();
+            return View(result);
         }
     }
 }
